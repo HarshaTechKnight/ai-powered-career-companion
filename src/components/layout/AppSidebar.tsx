@@ -3,13 +3,13 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Briefcase, LayoutDashboard, ScanText, SearchCode, Settings, LogOut, Moon, Sun, MessageSquareHeart } from "lucide-react";
+import { Briefcase, LayoutDashboard, ScanText, SearchCode, Settings, LogOut, Moon, Sun } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import {
-  TooltipProvider, // No longer needed here if SidebarProvider handles it, but keeping for safety
+  TooltipProvider, 
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -32,7 +32,7 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/resume-scanner", label: "Resume Scanner", icon: ScanText },
   { href: "/job-matcher", label: "Job Matcher", icon: SearchCode },
-  { href: "/interview-coach", label: "Interview Coach", icon: MessageSquareHeart },
+  // { href: "/interview-coach", label: "Interview Coach", icon: MessageSquareHeart }, // Removed Interview Coach
 ];
 
 
@@ -40,22 +40,20 @@ export function AppSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { setTheme, theme } = useTheme();
-  const { state: sidebarState } = useSidebar(); // Get sidebar state
+  const { state: sidebarState } = useSidebar(); 
 
   const isIconMode = sidebarState === "collapsed";
 
   const handleLogout = () => {
-    // Perform any actual logout logic here (e.g., clearing session, tokens)
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out.",
     });
-    router.push('/'); // Redirect to the main page
+    router.push('/'); 
   };
 
   const bottomNavItems = [
     { href: "/settings", label: "Settings", icon: Settings },
-    // Logout is now an action
     { id: "logout", label: "Logout", icon: LogOut, action: handleLogout },
   ];
 
