@@ -1,9 +1,11 @@
+
 import type { AnalyzedResume, ResumeEducation, ResumeExperience } from '@/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { Brain, Briefcase, GraduationCap, FileText } from 'lucide-react';
+import { Brain, Briefcase, GraduationCap, FileText, Gauge } from 'lucide-react'; // Added Gauge
+import { Progress } from '@/components/ui/progress'; // Added Progress
 
 interface ResumeAnalysisDisplayProps {
   analysis: AnalyzedResume;
@@ -28,6 +30,23 @@ export function ResumeAnalysisDisplay({ analysis, fileName }: ResumeAnalysisDisp
         <CardDescription>Here's what our AI found in your resume.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* ATS Score Section */}
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <Gauge className="h-5 w-5 text-primary" />
+            <h3 className="text-lg font-semibold">ATS Friendliness Score</h3>
+          </div>
+          <div className="flex items-center gap-3">
+            <Progress value={analysis.atsScore} className="w-full h-3" />
+            <span className="text-xl font-bold text-primary">{analysis.atsScore}%</span>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">
+            An estimate of how well this resume might perform with Applicant Tracking Systems.
+          </p>
+        </div>
+
+        <Separator />
+        
         {/* Skills Section */}
         <div>
           <div className="flex items-center gap-2 mb-3">
@@ -103,3 +122,4 @@ export function ResumeAnalysisDisplay({ analysis, fileName }: ResumeAnalysisDisp
     </Card>
   );
 }
+

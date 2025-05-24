@@ -1,8 +1,9 @@
+
 // This is a server-side file.
 'use server';
 
 /**
- * @fileOverview AI-powered resume analyzer to extract skills, experience, and education.
+ * @fileOverview AI-powered resume analyzer to extract skills, experience, education, and an ATS score.
  *
  * - analyzeResume - A function that handles the resume analysis process.
  * - AnalyzeResumeInput - The input type for the analyzeResume function.
@@ -41,6 +42,7 @@ const AnalyzeResumeOutputSchema = z.object({
         })
       )
       .describe('A list of educations from the resume') || z.array(z.string()),
+  atsScore: z.number().min(0).max(100).describe('An estimated ATS compatibility score as a percentage (0-100), reflecting how well the resume is structured for automated parsing.'),
 });
 
 export type AnalyzeResumeOutput = z.infer<typeof AnalyzeResumeOutputSchema>;
@@ -53,7 +55,15 @@ const prompt = ai.definePrompt({
   name: 'analyzeResumePrompt',
   input: {schema: AnalyzeResumeInputSchema},
   output: {schema: AnalyzeResumeOutputSchema},
-  prompt: `You are an expert resume analyzer. Extract the following information from the resume.\n\nSkills: A list of skills mentioned in the resume.\nExperience: A list of work experiences, including job title, company, and duration.\nEducation: A list of degrees and institutions.\n\nResume:\n{{media url=resumeDataUri}}`,
+  prompt: `You are an expert resume analyzer. Extract the following information from the resume.
+
+Skills: A list of skills mentioned in the resume.
+Experience: A list of work experiences, including job title, company, and duration.
+Education: A list of degrees and institutions.
+ATS Score: An estimated ATS compatibility score as a percentage (e.g., 85 for 85%). This score should reflect how well the resume is structured for automated parsing by Applicant Tracking Systems. Consider factors like clear section headings, standard formatting, keyword relevance (general good practices), and avoidance of complex layouts or images that might hinder parsing.
+
+Resume:
+{{media url=resumeDataUri}}`,
 });
 
 const analyzeResumeFlow = ai.defineFlow(
@@ -67,3 +77,4 @@ const analyzeResumeFlow = ai.defineFlow(
     return output!;
   }
 );
+

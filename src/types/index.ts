@@ -1,3 +1,4 @@
+
 export interface ResumeExperience {
   jobTitle: string;
   company: string;
@@ -14,6 +15,7 @@ export interface AnalyzedResume {
   skills: string[];
   experience: ResumeExperience[];
   education: (ResumeEducation | string)[]; // Updated to match AI flow where education can be string array
+  atsScore: number; // Added ATS score
 }
 
 // Matches the output structure of jobMatcher AI flow
@@ -44,3 +46,4 @@ export interface StoredResume extends AnalyzedResume {
   uploadDate: string; // or Date object
   isPrimary?: boolean;
 }
+
