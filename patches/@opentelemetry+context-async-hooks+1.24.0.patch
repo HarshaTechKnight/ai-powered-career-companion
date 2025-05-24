@@ -1,0 +1,14 @@
+diff --git a/node_modules/@opentelemetry/context-async-hooks/package.json b/node_modules/@opentelemetry/context-async-hooks/package.json
+index 0a79599..5c1e055 100644
+--- a/node_modules/@opentelemetry/context-async-hooks/package.json
++++ b/node_modules/@opentelemetry/context-async-hooks/package.json
+@@ -4,6 +4,9 @@
+   "description": "OpenTelemetry AsyncHooks Context Manager",
+   "main": "build/src/index.js",
+   "module": "build/esm/index.js",
++  "browser": {
++    "async_hooks": false
++  },
+   "exports": {
+     ".": {
+       "types": "./build/src/index.d.ts",
