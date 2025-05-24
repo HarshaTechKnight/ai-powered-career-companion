@@ -1,8 +1,10 @@
 
 import { initializeApp, getApp, getApps, type FirebaseOptions } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, OAuthProvider } from 'firebase/auth';
 
-const firebaseConfig: FirebaseOptions = {
+// This configuration is kept in case other Firebase services (e.g., Firestore, Storage)
+// are intended to be used in the future. If not, this file and the .env variables
+// related to Firebase can be removed.
+export const firebaseConfig: FirebaseOptions = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
@@ -11,22 +13,18 @@ const firebaseConfig: FirebaseOptions = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-
-const googleProvider = new GoogleAuthProvider();
-// Note: LinkedIn via Firebase directly is tricky due to LinkedIn API restrictions.
-// Firebase typically uses generic OAuthProvider for services like LinkedIn.
-// For this example, we'll prepare for a generic OAuth provider which you'd configure for LinkedIn in Firebase console.
-// Or, if LinkedIn is a direct provider in your Firebase SDK version / project setup, you can use that.
-// Let's assume a generic OAuth setup for LinkedIn for now.
-const linkedInProvider = new OAuthProvider('linkedin.com'); // This ID might vary based on Firebase setup
+// Initialize Firebase if config is provided
+let app;
+if (firebaseConfig.apiKey && firebaseConfig.projectId) {
+  app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+} else {
+  console.warn("Firebase config is missing. Firebase services will not be initialized.");
+}
 
 
-// Helper function to check if Firebase config is minimally set
-export const isFirebaseConfigured = () => {
+// Helper function to check if Firebase config is minimally set for non-auth services
+export const isFirebaseCoreConfigured = () => {
   return !!firebaseConfig.apiKey && !!firebaseConfig.authDomain && !!firebaseConfig.projectId;
 };
 
-export { app, auth, googleProvider, linkedInProvider, firebaseConfig };
+export { app }; // Exporting app in case other Firebase services are added later.

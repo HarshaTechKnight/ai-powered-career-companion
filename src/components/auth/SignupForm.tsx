@@ -18,9 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-import { Chrome, Linkedin, Loader2 } from "lucide-react";
-import { auth, googleProvider, linkedInProvider, isFirebaseConfigured } from "@/lib/firebase"; // Import Firebase auth and providers
-import { signInWithPopup, type AuthProvider, UserCredential } from "firebase/auth";
+import { Loader2 } from "lucide-react";
 import React from "react";
 
 const signupFormSchema = z.object({
@@ -37,7 +35,7 @@ type SignupFormValues = z.infer<typeof signupFormSchema>;
 
 export function SignupForm() {
   const router = useRouter();
-  const [isSubmittingSocial, setIsSubmittingSocial] = React.useState<null | 'google' | 'linkedin'>(null);
+  const [isSubmittingForm, setIsSubmittingForm] = React.useState(false);
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupFormSchema),
@@ -50,91 +48,28 @@ export function SignupForm() {
   });
 
   async function onSubmit(values: SignupFormValues) {
-    // Replace with actual email/password signup logic
-    console.log(values);
+    setIsSubmittingForm(true);
+    // Simulate API call for mock signup
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    console.log("Mock signup attempt with:", values);
     toast({
-      title: "Signup Submitted (Demo)",
-      description: "Email/Password signup is for demo. Try social sign up!",
+      title: "Sign Up Successful!",
+      description: `Welcome, ${values.fullName}! Your account is created. Redirecting to dashboard...`,
     });
-    // Example: router.push('/dashboard');
+    router.push('/dashboard');
+    // No need to setIsSubmittingForm(false) due to redirect
   }
-
-  const handleSocialSignup = async (provider: AuthProvider, providerName: 'google' | 'linkedin') => {
-    if (!isFirebaseConfigured()) {
-      toast({
-        title: "Firebase Not Configured",
-        description: (
-          <span>
-            Please set up your Firebase environment variables.{" "}
-            <Link href="/firebase-config-notice" className="underline text-primary">Learn more</Link>.
-          </span>
-        ),
-        variant: "destructive",
-        duration: 10000,
-      });
-      return;
-    }
-    setIsSubmittingSocial(providerName);
-    try {
-      const result: UserCredential = await signInWithPopup(auth, provider);
-      const user = result.user;
-      toast({
-        title: "Sign Up Successful!",
-        description: `Welcome, ${user.displayName || user.email}! Your account is created.`,
-      });
-      // Potentially save additional user info to your backend here
-      router.push('/dashboard'); // Redirect to dashboard
-    } catch (error: any) {
-      console.error("Social signup error:", error);
-      toast({
-        title: "Sign Up Failed",
-        description: error.message || "An unexpected error occurred during social sign up.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmittingSocial(null);
-    }
-  };
 
   return (
     <Card className="w-full shadow-xl">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl">Create an Account</CardTitle>
         <CardDescription>
-          Join KarmaMatch quickly using a social account or with your email.
+          Join KarmaMatch by filling out the form below.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Button 
-            variant="outline" 
-            onClick={() => handleSocialSignup(googleProvider, 'google')}
-            disabled={!!isSubmittingSocial}
-            className="w-full"
-          >
-            {isSubmittingSocial === 'google' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Chrome className="mr-2 h-4 w-4" />}
-            Sign up with Google
-          </Button>
-          <Button 
-            variant="outline" 
-            onClick={() => handleSocialSignup(linkedInProvider, 'linkedin')}
-            disabled={!!isSubmittingSocial}
-            className="w-full"
-          >
-            {isSubmittingSocial === 'linkedin' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Linkedin className="mr-2 h-4 w-4" />}
-            Sign up with LinkedIn
-          </Button>
-        </div>
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">
-              Or create an account with email
-            </span>
-          </div>
-        </div>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
@@ -144,7 +79,7 @@ export function SignupForm() {
                 <FormItem>
                   <FormLabel>Full Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Your Full Name" {...field} disabled={!!isSubmittingSocial}/>
+                    <Input placeholder="Your Full Name" {...field} disabled={isSubmittingForm}/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -157,7 +92,7 @@ export function SignupForm() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="you@example.com" {...field} disabled={!!isSubmittingSocial}/>
+                    <Input placeholder="you@example.com" {...field} disabled={isSubmittingForm}/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -170,7 +105,7 @@ export function SignupForm() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} disabled={!!isSubmittingSocial}/>
+                    <Input type="password" placeholder="••••••••" {...field} disabled={isSubmittingForm}/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -183,14 +118,14 @@ export function SignupForm() {
                 <FormItem>
                   <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} disabled={!!isSubmittingSocial}/>
+                    <Input type="password" placeholder="••••••••" {...field} disabled={isSubmittingForm}/>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full" disabled={form.formState.isSubmitting || !!isSubmittingSocial}>
-              {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Button type="submit" className="w-full" disabled={isSubmittingForm}>
+              {isSubmittingForm && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Account
             </Button>
           </form>
