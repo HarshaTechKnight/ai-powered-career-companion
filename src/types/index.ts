@@ -46,3 +46,22 @@ export interface JobApplication {
   dateApplied: string; // or Date object
   resumeIdUsed?: string; // ID of the StoredResume used for this application
 }
+
+// For the single job matching flow (job-matcher.ts)
+export interface JobMatchResult {
+  jobRanking: string;
+  fitCategory: string;
+}
+
+// For the new job recommender flow (job-recommender.ts)
+export interface RecommendedJob {
+  id: string;
+  title: string;
+  company: string;
+  reasoning: string;
+  relevanceScore?: string;
+}
+
+export interface JobRecommenderOutput {
+  recommendations: RecommendedJob[];
+}
