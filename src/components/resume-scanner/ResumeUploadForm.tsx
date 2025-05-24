@@ -12,6 +12,7 @@ import { Loader2, FileUp, CheckCircle, AlertTriangle } from 'lucide-react';
 import type { AnalyzedResume } from '@/types';
 import { analyzeResume, type AnalyzeResumeInput } from '@/ai/flows/resume-analyzer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_FILE_TYPES = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
