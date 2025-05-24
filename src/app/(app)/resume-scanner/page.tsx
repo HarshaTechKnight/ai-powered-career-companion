@@ -1,7 +1,7 @@
 
 "use client"; 
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ResumeUploadForm } from '@/components/resume-scanner/ResumeUploadForm';
 import { ResumeAnalysisDisplay } from '@/components/resume-scanner/ResumeAnalysisDisplay';
@@ -10,8 +10,10 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, FilePlus2 } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
-export default function ResumeScannerPageContent() {
+// This function should not be default exported
+function ResumeScannerPageContent() {
   const searchParams = useSearchParams();
   const [analysisResult, setAnalysisResult] = useState<AnalyzedResume | null>(null);
   const [analyzedFileName, setAnalyzedFileName] = useState<string>("");
@@ -110,10 +112,7 @@ export default function ResumeScannerPageContent() {
 }
 
 
-// Wrap with Suspense because useSearchParams is used
-import { Suspense } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
-
+// This function should not be default exported
 function ResumeScannerPageSkeleton() {
   return (
     <div className="space-y-8">
