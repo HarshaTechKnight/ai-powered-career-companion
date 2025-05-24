@@ -2,12 +2,14 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link'; // Added import
 import { JobSearchForm } from '@/components/job-matcher/JobSearchForm';
 import { JobResultsDisplay } from '@/components/job-matcher/JobResultsDisplay';
 import type { AnalyzedResume, JobMatchResult } from '@/types';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Terminal } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Card, CardHeader, CardContent } from '@/components/ui/card'; // Added Card imports for Skeleton
 
 
 function JobMatcherContent() {
