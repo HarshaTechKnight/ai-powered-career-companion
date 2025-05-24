@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react'; // Added useEffect
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
@@ -12,11 +12,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from '@/hooks/use-toast';
 import { Loader2, Lightbulb, Brain, MessageSquareHeart, AlertTriangle, Sparkles, ListChecks } from 'lucide-react';
-import { coachInterview, InterviewCoachInputSchema, type InterviewCoachInput, type InterviewCoachOutput } from '@/ai/flows/interview-coach';
-import type { Metadata } from 'next'; // For document title
-
-// No direct metadata export from client component, title set via useEffect
-// export const metadata: Metadata = { ... }
+import { coachInterview } from '@/ai/flows/interview-coach';
+import { InterviewCoachInputSchema, type InterviewCoachInput, type InterviewCoachOutput } from '@/ai/schemas/interview-coach';
+// Metadata should be handled by parent layout or server component for client components
+// import type { Metadata } from 'next'; 
 
 type CoachMode = "generateQuestions" | "getFeedbackOnAnswer";
 
@@ -36,20 +35,18 @@ export default function InterviewCoachPage() {
     },
   });
 
-  // Set document title using useEffect
-  useState(() => {
-    if (typeof document !== 'undefined') {
-      document.title = "AI Interview Coach | KarmaMatch";
-    }
-  });
+  useEffect(() => {
+    // Set document title on client side for client components
+    document.title = "AI Interview Coach | KarmaMatch";
+  }, []);
 
   const handleModeChange = (newMode: CoachMode) => {
     setMode(newMode);
     form.setValue("action", newMode);
-    setResult(null); // Clear previous results when mode changes
-    form.reset({ // Reset form fields relevant to the new mode
+    setResult(null); 
+    form.reset({ 
         action: newMode,
-        jobDescription: form.getValues("jobDescription"), // Keep job description
+        jobDescription: form.getValues("jobDescription"), 
         questionCategory: newMode === "generateQuestions" ? "general" : undefined,
         interviewQuestion: newMode === "getFeedbackOnAnswer" ? "" : undefined,
         userAnswer: newMode === "getFeedbackOnAnswer" ? "" : undefined,
