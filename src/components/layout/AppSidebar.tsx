@@ -1,16 +1,17 @@
+
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Briefcase, LayoutDashboard, ScanText, SearchCode, Settings, LogOut, UserCircle, Moon, Sun } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Briefcase, LayoutDashboard, ScanText, SearchCode, Settings, LogOut, Moon, Sun } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import {
+  TooltipProvider, // No longer needed here if SidebarProvider handles it, but keeping for safety
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
@@ -21,11 +22,10 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarGroup,
-  SidebarGroupLabel,
   SidebarSeparator,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { toast } from "@/hooks/use-toast";
 
 
 const navItems = [
@@ -34,20 +34,30 @@ const navItems = [
   { href: "/job-matcher", label: "Job Matcher", icon: SearchCode },
 ];
 
-const bottomNavItems = [
-  { href: "/settings", label: "Settings", icon: Settings },
-  // Logout would typically be an action, not a link, or a link to an API route that logs out.
-  // For demo purposes, it's a link.
-  { href: "/login", label: "Logout", icon: LogOut },
-];
-
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { setTheme, theme } = useTheme();
   const { state: sidebarState } = useSidebar(); // Get sidebar state
 
   const isIconMode = sidebarState === "collapsed";
+
+  const handleLogout = () => {
+    // Perform any actual logout logic here (e.g., clearing session, tokens)
+    toast({
+      title: "Logged Out",
+      description: "You have been successfully logged out.",
+    });
+    router.push('/'); // Redirect to the main page
+  };
+
+  const bottomNavItems = [
+    { href: "/settings", label: "Settings", icon: Settings },
+    // Logout is now an action
+    { id: "logout", label: "Logout", icon: LogOut, action: handleLogout },
+  ];
+
 
   return (
     <Sidebar collapsible="icon" variant="sidebar" side="left" className="border-r">
@@ -75,21 +85,6 @@ export function AppSidebar() {
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
-
-        {/* Example of a group */}
-        {/* <SidebarGroup>
-          <SidebarGroupLabel>Profile</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton tooltip="My Profile">
-                  <UserCircle />
-                  <span>My Profile</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup> */}
       </SidebarContent>
 
       <SidebarSeparator />
@@ -106,17 +101,27 @@ export function AppSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
           {bottomNavItems.map((item) => (
-            <SidebarMenuItem key={item.href}>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname === item.href}
-                tooltip={item.label}
-              >
-                <Link href={item.href}>
+            <SidebarMenuItem key={item.id || item.href}>
+              {item.action ? (
+                <SidebarMenuButton
+                  onClick={item.action}
+                  tooltip={item.label}
+                >
                   <item.icon />
                   <span>{item.label}</span>
-                </Link>
-              </SidebarMenuButton>
+                </SidebarMenuButton>
+              ) : (
+                <SidebarMenuButton
+                  asChild
+                  isActive={item.href && pathname === item.href}
+                  tooltip={item.label}
+                >
+                  <Link href={item.href!}>
+                    <item.icon />
+                    <span>{item.label}</span>
+                  </Link>
+                </SidebarMenuButton>
+              )}
             </SidebarMenuItem>
           ))}
         </SidebarMenu>
