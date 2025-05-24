@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Briefcase, CheckCircle, Edit3, PlusCircle, Trash2 } from 'lucide-react';
+import { FileText, Briefcase, CheckCircle, Edit3, PlusCircle, Trash2, ScanText, SearchCode } from 'lucide-react';
 import Link from 'next/link';
 import type { UserProfile, JobApplication, StoredResume } from '@/types';
 import Image from 'next/image';
