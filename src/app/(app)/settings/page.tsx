@@ -13,11 +13,6 @@ import { Textarea } from '@/components/ui/textarea';
 import type { UserProfile, StoredResume } from '@/types'; // Assuming StoredResume is defined
 import { Badge } from '@/components/ui/badge';
 
-export const metadata: Metadata = {
-  title: 'Profile & Settings',
-  description: 'Manage your KarmaMatch profile, resumes, and account settings.',
-};
-
 // Mock data - replace with actual data fetching and state management
 const userProfile: UserProfile = {
   id: 'user123',
