@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Briefcase, Edit3, PlusCircle, Trash2, ScanText, SearchCode, User, Target, TrendingUp, Brain, AlertTriangle } from 'lucide-react';
+import { FileText, Briefcase, Edit3, PlusCircle, Trash2, ScanText, SearchCode, User, Target, TrendingUp, Brain, AlertTriangle, Award } from 'lucide-react';
 import Link from 'next/link';
 import type { UserProfile, JobApplication, StoredResume } from '@/types';
 import Image from 'next/image';
@@ -52,6 +52,12 @@ const aiMatchInsights = {
   bestFitCount: 5,
   stretchRoleCount: 12,
 };
+
+const mockRecommendedJobs = [
+  { id: 'rec001', title: 'AI Ethics Specialist', company: 'Innovate Solutions', relevance: '92%' },
+  { id: 'rec002', title: 'Lead Data Scientist', company: 'DataDriven Co.', relevance: '88%' },
+  { id: 'rec003', title: 'Frontend Architect (React)', company: 'WebWizards Ltd.', relevance: '85%' },
+];
 
 export default function DashboardPage() {
   const profileCompletion = 75; // Example percentage
@@ -201,8 +207,8 @@ export default function DashboardPage() {
         </Card>
       </div>
 
-      {/* New Features Row */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      {/* Enhanced Insights Row */}
+      <div className="grid gap-6 lg:grid-cols-3">
         <Card className="shadow-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -259,6 +265,46 @@ export default function DashboardPage() {
             )}
           </CardContent>
         </Card>
+        
+        <Card className="shadow-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Award className="h-6 w-6 text-primary" />
+              Recommended Jobs
+            </CardTitle>
+            <CardDescription>AI-powered job suggestions based on your primary resume.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {primaryResume ? (
+              <>
+                <ul className="space-y-3">
+                  {mockRecommendedJobs.slice(0,3).map((job, index) => (
+                    <li key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50">
+                      <div>
+                        <p className="font-medium">{job.title}</p>
+                        <p className="text-sm text-muted-foreground">{job.company} - <span className="text-xs text-primary">{job.relevance} Match</span></p>
+                      </div>
+                       <Button variant="outline" size="sm" asChild>
+                        <Link href={`/job-matcher?mockJobId=${job.id}`}>View</Link>
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+                <Button variant="link" asChild className="p-0 h-auto mt-4">
+                  <Link href="/job-matcher">Explore All Recommendations <SearchCode className="ml-1 h-4 w-4" /></Link>
+                </Button>
+              </>
+            ) : (
+              <div className="text-center py-6 text-muted-foreground">
+                <AlertTriangle className="mx-auto h-8 w-8 mb-2" />
+                <p>Scan a resume to get personalized job recommendations.</p>
+                <Button variant="link" asChild className="mt-2">
+                  <Link href="/resume-scanner">Scan Resume Now</Link>
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
 
@@ -292,26 +338,4 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-// Placeholder icon, replace if you have a specific one (UserEditIcon was removed as User from lucide is used)
-// function UserEditIcon(props: React.SVGProps<SVGSVGElement>) {
-//   return (
-//     <svg
-//       {...props}
-//       xmlns="http://www.w3.org/2000/svg"
-//       width="24"
-//       height="24"
-//       viewBox="0 0 24 24"
-//       fill="none"
-//       stroke="currentColor"
-//       strokeWidth="2"
-//       strokeLinecap="round"
-//       strokeLinejoin="round"
-//     >
-//       <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-//       <path d="m15 5 4 4" />
-//     </svg>
-//   )
-// }
-
     
