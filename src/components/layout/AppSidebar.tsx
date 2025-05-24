@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Briefcase, LayoutDashboard, ScanText, SearchCode, Settings, LogOut, Moon, Sun } from "lucide-react";
+import { Briefcase, LayoutDashboard, ScanText, SearchCode, Settings, LogOut, Moon, Sun, MessageSquareHeart } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/resume-scanner", label: "Resume Scanner", icon: ScanText },
   { href: "/job-matcher", label: "Job Matcher", icon: SearchCode },
+  { href: "/interview-coach", label: "Interview Coach", icon: MessageSquareHeart },
 ];
 
 
