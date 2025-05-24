@@ -1,10 +1,11 @@
+
 import type { Metadata } from 'next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Briefcase, CheckCircle, Edit3, PlusCircle, Trash2, ScanText, SearchCode } from 'lucide-react';
+import { FileText, Briefcase, Edit3, PlusCircle, Trash2, ScanText, SearchCode, User, Target, TrendingUp, Brain, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import type { UserProfile, JobApplication, StoredResume } from '@/types';
 import Image from 'next/image';
@@ -27,7 +28,7 @@ const resumes: StoredResume[] = [
     fileName: 'Software_Engineer_Resume.pdf',
     uploadDate: '2024-07-15',
     isPrimary: true,
-    skills: ['React', 'Node.js', 'TypeScript', 'AWS'],
+    skills: ['React', 'Node.js', 'TypeScript', 'AWS', 'Next.js', 'GraphQL', 'CI/CD'],
     experience: [{ jobTitle: 'Frontend Developer', company: 'Tech Solutions Inc.', duration: '2 years' }],
     education: [{ degree: 'B.Tech Computer Science', institution: 'IIT Delhi' }],
   },
@@ -35,7 +36,7 @@ const resumes: StoredResume[] = [
     id: 'resume002',
     fileName: 'Project_Manager_CV.docx',
     uploadDate: '2024-06-20',
-    skills: ['Agile', 'Scrum', 'JIRA', 'Project Planning'],
+    skills: ['Agile', 'Scrum', 'JIRA', 'Project Planning', 'Stakeholder Management'],
     experience: [{ jobTitle: 'Project Coordinator', company: 'Innovate Hub', duration: '3 years' }],
     education: [{ degree: 'MBA', institution: 'IIM Bangalore' }],
   },
@@ -47,9 +48,14 @@ const jobApplications: JobApplication[] = [
   { id: 'app003', jobTitle: 'UX Designer', company: 'Creative Minds', status: 'Rejected', dateApplied: '2024-06-28' },
 ];
 
+const aiMatchInsights = {
+  bestFitCount: 5,
+  stretchRoleCount: 12,
+};
 
 export default function DashboardPage() {
   const profileCompletion = 75; // Example percentage
+  const primaryResume = resumes.find(r => r.isPrimary);
 
   return (
     <div className="space-y-8">
@@ -59,7 +65,7 @@ export default function DashboardPage() {
         <Card className="shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Profile Completion</CardTitle>
-            <UserEditIcon className="h-4 w-4 text-muted-foreground" />
+            <User className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{profileCompletion}%</div>
@@ -83,7 +89,7 @@ export default function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{resumes.length}</div>
             <p className="text-xs text-muted-foreground">
-              {resumes.find(r => r.isPrimary)?.fileName || 'No primary resume set'}
+              {primaryResume?.fileName || 'No primary resume set'}
             </p>
           </CardContent>
            <CardFooter>
@@ -171,9 +177,9 @@ export default function DashboardPage() {
                         <Badge variant={
                           app.status === 'Interviewing' ? 'default' :
                           app.status === 'Applied' ? 'secondary' :
-                          app.status === 'Offer' ? 'default' : // Success variant would be good here
+                          app.status === 'Offer' ? 'default' : 
                           'destructive'
-                        } className={app.status === 'Offer' ? 'bg-green-500 text-white' : ''}>
+                        } className={app.status === 'Offer' ? 'bg-green-500 text-white hover:bg-green-600' : ''}>
                           {app.status}
                         </Badge>
                       </TableCell>
@@ -195,6 +201,67 @@ export default function DashboardPage() {
         </Card>
       </div>
 
+      {/* New Features Row */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card className="shadow-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="h-6 w-6 text-primary" />
+              AI Match Insights
+            </CardTitle>
+            <CardDescription>Summary of your job matching potential based on AI analysis.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
+              <div className="flex items-center gap-3">
+                <Target className="h-5 w-5 text-green-500" />
+                <p>Best Fit Jobs Identified</p>
+              </div>
+              <p className="font-bold text-lg">{aiMatchInsights.bestFitCount}</p>
+            </div>
+            <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
+              <div className="flex items-center gap-3">
+                <TrendingUp className="h-5 w-5 text-blue-500" />
+                <p>Stretch Roles Explored</p>
+              </div>
+              <p className="font-bold text-lg">{aiMatchInsights.stretchRoleCount}</p>
+            </div>
+             <Button variant="link" asChild className="p-0 h-auto">
+              <Link href="/job-matcher">Explore more job matches <SearchCode className="ml-1 h-4 w-4" /></Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="h-6 w-6 text-primary" />
+              Key Skills
+            </CardTitle>
+            <CardDescription>Top skills from your primary resume.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {primaryResume && primaryResume.skills.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {primaryResume.skills.slice(0, 10).map((skill, index) => ( // Show top 10 skills
+                  <Badge key={index} variant="secondary" className="px-3 py-1 text-sm">{skill}</Badge>
+                ))}
+                {primaryResume.skills.length > 10 && <Badge variant="outline">+{primaryResume.skills.length - 10} more</Badge>}
+              </div>
+            ) : (
+              <div className="text-center py-6 text-muted-foreground">
+                <AlertTriangle className="mx-auto h-8 w-8 mb-2" />
+                <p>No primary resume found or no skills extracted.</p>
+                <Button variant="link" asChild className="mt-2">
+                  <Link href="/resume-scanner">Scan a resume to see skills here</Link>
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+
       {/* Quick Actions */}
       <Card className="shadow-md">
         <CardHeader>
@@ -215,7 +282,7 @@ export default function DashboardPage() {
           </Button>
           <Button variant="outline" size="lg" asChild className="flex flex-col h-auto p-6 items-center justify-center text-center space-y-2">
             <Link href="/settings/profile">
-              <UserEditIcon className="h-8 w-8 mb-2 text-primary" />
+              <User className="h-8 w-8 mb-2 text-primary" />
               <span>Update Profile</span>
             </Link>
           </Button>
@@ -226,23 +293,25 @@ export default function DashboardPage() {
   );
 }
 
-// Placeholder icon, replace if you have a specific one
-function UserEditIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-      <path d="m15 5 4 4" />
-    </svg>
-  )
-}
+// Placeholder icon, replace if you have a specific one (UserEditIcon was removed as User from lucide is used)
+// function UserEditIcon(props: React.SVGProps<SVGSVGElement>) {
+//   return (
+//     <svg
+//       {...props}
+//       xmlns="http://www.w3.org/2000/svg"
+//       width="24"
+//       height="24"
+//       viewBox="0 0 24 24"
+//       fill="none"
+//       stroke="currentColor"
+//       strokeWidth="2"
+//       strokeLinecap="round"
+//       strokeLinejoin="round"
+//     >
+//       <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+//       <path d="m15 5 4 4" />
+//     </svg>
+//   )
+// }
+
+    
