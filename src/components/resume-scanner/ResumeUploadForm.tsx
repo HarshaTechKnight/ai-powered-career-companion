@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, type ChangeEvent } from 'react';
+import { useState, type ChangeEvent, useEffect } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -31,25 +32,32 @@ type ResumeUploadFormValues = z.infer<typeof resumeUploadSchema>;
 
 interface ResumeUploadFormProps {
   onAnalysisComplete: (analysis: AnalyzedResume, fileName: string) => void;
+  initialFileName?: string; // To pre-fill if re-analyzing
 }
 
-export function ResumeUploadForm({ onAnalysisComplete }: ResumeUploadFormProps) {
+export function ResumeUploadForm({ onAnalysisComplete, initialFileName }: ResumeUploadFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [fileName, setFileName] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string | null>(initialFileName || null);
 
   const form = useForm<ResumeUploadFormValues>({
     resolver: zodResolver(resumeUploadSchema),
   });
 
+  useEffect(() => {
+    if (initialFileName) {
+      setFileName(initialFileName);
+    }
+  }, [initialFileName]);
+
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
       setFileName(files[0].name);
-      form.setValue("resumeFile", files); // Update react-hook-form state
-      form.trigger("resumeFile"); // Manually trigger validation for the file input
+      form.setValue("resumeFile", files); 
+      form.trigger("resumeFile"); 
     } else {
       setFileName(null);
-      form.setValue("resumeFile", new DataTransfer().files); // Clear the file input in form state
+      form.setValue("resumeFile", new DataTransfer().files); 
     }
   };
 
@@ -67,18 +75,22 @@ export function ResumeUploadForm({ onAnalysisComplete }: ResumeUploadFormProps) 
         const analysisResult = await analyzeResume(input);
 
         if (analysisResult) {
-          onAnalysisComplete(analysisResult as AnalyzedResume, file.name); // Cast needed due to AI flow output schema flexibility
+          onAnalysisComplete(analysisResult as AnalyzedResume, file.name);
           toast({
             title: "Resume Analyzed Successfully",
             description: `${file.name} has been processed.`,
             variant: "default",
             action: <CheckCircle className="text-green-500" />,
           });
+          // Do not reset form if initialFileName was present, user might want to use the same file info
+          if (!initialFileName) {
+            form.reset(); 
+            setFileName(null); 
+          }
         } else {
           throw new Error("AI analysis returned no result.");
         }
-        form.reset(); // Reset form after successful submission
-        setFileName(null); // Clear displayed file name
+        setIsSubmitting(false); // Set submitting to false here after success
       };
       reader.onerror = (error) => {
         console.error("FileReader error:", error);
@@ -98,8 +110,6 @@ export function ResumeUploadForm({ onAnalysisComplete }: ResumeUploadFormProps) 
         action: <AlertTriangle className="text-red-500" />,
       });
       setIsSubmitting(false);
-    } finally {
-      // setIsSubmitting(false) is handled in onloadend/onerror or if error occurs before that
     }
   };
 
@@ -107,7 +117,9 @@ export function ResumeUploadForm({ onAnalysisComplete }: ResumeUploadFormProps) 
     <Card className="shadow-lg">
       <CardHeader>
         <CardTitle className="text-2xl">Scan Your Resume</CardTitle>
-        <CardDescription>Upload your resume (PDF or DOCX, max 5MB) to extract key information using AI.</CardDescription>
+        <CardDescription>Upload your resume (PDF or DOCX, max 5MB) to extract key information using AI.
+        {initialFileName && ` You can re-upload to update the analysis for "${initialFileName}".`}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -142,7 +154,7 @@ export function ResumeUploadForm({ onAnalysisComplete }: ResumeUploadFormProps) 
                 Analyzing...
               </>
             ) : (
-              "Scan Resume"
+              initialFileName ? "Re-Analyze This Resume" : "Scan Resume"
             )}
           </Button>
         </form>

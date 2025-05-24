@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { FileText, Briefcase, Edit3, PlusCircle, Trash2, ScanText, SearchCode, User, Target, TrendingUp, Brain, AlertTriangle, Award } from 'lucide-react';
+import { FileText, Briefcase, Edit3, PlusCircle, Trash2, ScanText, SearchCode, User, Target, TrendingUp, Brain, AlertTriangle, Award, Settings as SettingsIcon, Eye } from 'lucide-react';
 import Link from 'next/link';
 import type { UserProfile, JobApplication, StoredResume } from '@/types';
 import Image from 'next/image';
@@ -15,52 +15,59 @@ export const metadata: Metadata = {
   description: 'Manage your KarmaMatch profile, resumes, and job applications.',
 };
 
-// Mock data - replace with actual data fetching
+// --- Mock Data ---
 const userProfile: UserProfile = {
   id: 'user123',
   fullName: 'Aishwarya Sharma',
   email: 'aishwarya.sharma@example.com',
+  headline: 'Aspiring AI Ethicist & Data Scientist',
 };
 
 const resumes: StoredResume[] = [
   {
     id: 'resume001',
-    fileName: 'Software_Engineer_Resume.pdf',
-    uploadDate: '2024-07-15',
+    fileName: 'AI_Ethics_Specialist_Resume.pdf',
+    uploadDate: '2024-07-20',
     isPrimary: true,
-    skills: ['React', 'Node.js', 'TypeScript', 'AWS', 'Next.js', 'GraphQL', 'CI/CD'],
-    experience: [{ jobTitle: 'Frontend Developer', company: 'Tech Solutions Inc.', duration: '2 years' }],
-    education: [{ degree: 'B.Tech Computer Science', institution: 'IIT Delhi' }],
+    skills: ['Python', 'Machine Learning', 'Ethics in AI', 'Data Analysis', 'NLP', 'Research', 'Critical Thinking'],
+    experience: [
+      { jobTitle: 'AI Research Intern', company: 'Future AI Labs', duration: '6 months' },
+      { jobTitle: 'Data Analyst Assistant', company: 'Insight Corp', duration: '1 year' }
+    ],
+    education: [{ degree: 'M.Sc. Data Science', institution: 'University of Advanced Tech' }],
+    atsScore: 88,
   },
   {
     id: 'resume002',
-    fileName: 'Project_Manager_CV.docx',
-    uploadDate: '2024-06-20',
-    skills: ['Agile', 'Scrum', 'JIRA', 'Project Planning', 'Stakeholder Management'],
-    experience: [{ jobTitle: 'Project Coordinator', company: 'Innovate Hub', duration: '3 years' }],
-    education: [{ degree: 'MBA', institution: 'IIM Bangalore' }],
+    fileName: 'General_Tech_CV.docx',
+    uploadDate: '2024-07-15',
+    skills: ['JavaScript', 'React', 'Node.js', 'Project Management', 'Communication'],
+    experience: [{ jobTitle: 'Junior Developer', company: 'Web Solutions', duration: '1.5 years' }],
+    education: [{ degree: 'B.Tech Computer Science', institution: 'State University' }],
+    atsScore: 75,
   },
 ];
 
 const jobApplications: JobApplication[] = [
-  { id: 'app001', jobTitle: 'Senior React Developer', company: 'FutureTech', status: 'Interviewing', dateApplied: '2024-07-10' },
-  { id: 'app002', jobTitle: 'Cloud Solutions Architect', company: 'SkyHigh Cloud', status: 'Applied', dateApplied: '2024-07-05' },
-  { id: 'app003', jobTitle: 'UX Designer', company: 'Creative Minds', status: 'Rejected', dateApplied: '2024-06-28' },
+  { id: 'app001', jobTitle: 'AI Ethics Researcher', company: 'Ethica AI', status: 'Interviewing', dateApplied: '2024-07-22', resumeIdUsed: 'resume001' },
+  { id: 'app002', jobTitle: 'Junior Data Scientist', company: 'Data Insights Ltd.', status: 'Applied', dateApplied: '2024-07-18' },
+  { id: 'app003', jobTitle: 'Frontend Developer', company: 'Creative Web', status: 'Saved', dateApplied: '2024-07-10' },
 ];
 
 const aiMatchInsights = {
-  bestFitCount: 5,
-  stretchRoleCount: 12,
+  bestFitCount: 3, // Based on primary resume
+  stretchRoleCount: 8,
 };
 
 const mockRecommendedJobs = [
-  { id: 'rec001', title: 'AI Ethics Specialist', company: 'Innovate Solutions', relevance: '92%' },
-  { id: 'rec002', title: 'Lead Data Scientist', company: 'DataDriven Co.', relevance: '88%' },
-  { id: 'rec003', title: 'Frontend Architect (React)', company: 'WebWizards Ltd.', relevance: '85%' },
+  { id: 'rec001', title: 'AI Policy Analyst', company: 'GovTech Institute', relevance: '92%' },
+  { id: 'rec002', title: 'Responsible AI Developer', company: 'Innovate AI', relevance: '88%' },
+  { id: 'rec003', title: 'Data Ethics Consultant', company: 'Principled Data', relevance: '85%' },
 ];
+// --- End Mock Data ---
 
 export default function DashboardPage() {
-  const profileCompletion = 75; // Example percentage
+  const profileCompletion = userProfile.headline && resumes.some(r => r.isPrimary) ? 90 : 60; // Example percentage
   const primaryResume = resumes.find(r => r.isPrimary);
 
   return (
@@ -77,30 +84,30 @@ export default function DashboardPage() {
             <div className="text-2xl font-bold">{profileCompletion}%</div>
             <Progress value={profileCompletion} className="mt-2 h-2" />
             <p className="text-xs text-muted-foreground mt-1">
-              Complete your profile for better job matches.
+              {profileCompletion < 100 ? "Complete your profile for better matches." : "Profile looks great!"}
             </p>
           </CardContent>
           <CardFooter>
             <Button variant="outline" size="sm" asChild>
-              <Link href="/settings/profile"><Edit3 className="mr-2 h-4 w-4" /> Edit Profile</Link>
+              <Link href="/settings"><Edit3 className="mr-2 h-4 w-4" /> Edit Profile</Link>
             </Button>
           </CardFooter>
         </Card>
 
         <Card className="shadow-lg">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Uploaded Resumes</CardTitle>
+            <CardTitle className="text-sm font-medium">Stored Resumes</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{resumes.length}</div>
-            <p className="text-xs text-muted-foreground">
-              {primaryResume?.fileName || 'No primary resume set'}
+            <p className="text-xs text-muted-foreground truncate">
+              Primary: {primaryResume?.fileName || 'Not set'}
             </p>
           </CardContent>
            <CardFooter>
             <Button variant="outline" size="sm" asChild>
-              <Link href="/resume-scanner"><PlusCircle className="mr-2 h-4 w-4" /> Manage Resumes</Link>
+              <Link href="/settings"><SettingsIcon className="mr-2 h-4 w-4" /> Manage Resumes</Link>
             </Button>
           </CardFooter>
         </Card>
@@ -113,7 +120,7 @@ export default function DashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{jobApplications.filter(app => app.status === 'Applied' || app.status === 'Interviewing').length}</div>
             <p className="text-xs text-muted-foreground">
-              Keep track of your job prospects.
+              Total applications: {jobApplications.length}
             </p>
           </CardContent>
            <CardFooter>
@@ -128,7 +135,7 @@ export default function DashboardPage() {
         <Card className="shadow-md">
           <CardHeader>
             <CardTitle>My Resumes</CardTitle>
-            <CardDescription>Manage your uploaded resumes. Set a primary resume for quick applications.</CardDescription>
+            <CardDescription>Overview of your stored resumes. Manage them in Settings.</CardDescription>
           </CardHeader>
           <CardContent>
             {resumes.length > 0 ? (
@@ -137,11 +144,19 @@ export default function DashboardPage() {
                   <li key={resume.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50">
                     <div>
                       <p className="font-medium">{resume.fileName} {resume.isPrimary && <Badge variant="outline" className="ml-2 border-primary text-primary">Primary</Badge>}</p>
-                      <p className="text-sm text-muted-foreground">Uploaded: {resume.uploadDate}</p>
+                      <p className="text-sm text-muted-foreground">Uploaded: {resume.uploadDate} | ATS: {resume.atsScore}%</p>
                     </div>
-                    <div className="space-x-2">
-                      <Button variant="ghost" size="icon" className="h-8 w-8"><Edit3 className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive"><Trash2 className="h-4 w-4" /></Button>
+                    <div className="space-x-1">
+                       <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                        <Link href={`/resume-scanner?resumeId=${resume.id}`} title="View/Analyze (mock)"> 
+                          <Eye className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                        <Link href="/settings" title="Manage Resumes">
+                          <Edit3 className="h-4 w-4" />
+                        </Link>
+                      </Button>
                     </div>
                   </li>
                 ))}
@@ -151,9 +166,14 @@ export default function DashboardPage() {
                 <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
                 <p className="mt-2 text-sm text-muted-foreground">No resumes uploaded yet.</p>
                 <Button asChild className="mt-4">
-                  <Link href="/resume-scanner"><PlusCircle className="mr-2 h-4 w-4" /> Upload Resume</Link>
+                  <Link href="/resume-scanner"><PlusCircle className="mr-2 h-4 w-4" /> Upload & Analyze First Resume</Link>
                 </Button>
               </div>
+            )}
+             {resumes.length > 0 && (
+                <Button variant="link" asChild className="mt-4 p-0 h-auto">
+                    <Link href="/settings">Manage all resumes in Settings <SettingsIcon className="ml-1 h-4 w-4" /></Link>
+                </Button>
             )}
           </CardContent>
         </Card>
@@ -175,15 +195,16 @@ export default function DashboardPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {jobApplications.slice(0, 5).map((app) => ( // Show top 5
+                  {jobApplications.slice(0, 5).map((app) => ( 
                     <TableRow key={app.id}>
-                      <TableCell className="font-medium">{app.jobTitle}</TableCell>
-                      <TableCell>{app.company}</TableCell>
+                      <TableCell className="font-medium truncate max-w-xs">{app.jobTitle}</TableCell>
+                      <TableCell className="truncate max-w-xs">{app.company}</TableCell>
                       <TableCell>
                         <Badge variant={
                           app.status === 'Interviewing' ? 'default' :
                           app.status === 'Applied' ? 'secondary' :
                           app.status === 'Offer' ? 'default' : 
+                          app.status === 'Saved' ? 'outline' :
                           'destructive'
                         } className={app.status === 'Offer' ? 'bg-green-500 text-white hover:bg-green-600' : ''}>
                           {app.status}
@@ -215,7 +236,7 @@ export default function DashboardPage() {
               <Target className="h-6 w-6 text-primary" />
               AI Match Insights
             </CardTitle>
-            <CardDescription>Summary of your job matching potential based on AI analysis.</CardDescription>
+            <CardDescription>Potential based on your primary resume.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
@@ -223,14 +244,14 @@ export default function DashboardPage() {
                 <Target className="h-5 w-5 text-green-500" />
                 <p>Best Fit Jobs Identified</p>
               </div>
-              <p className="font-bold text-lg">{aiMatchInsights.bestFitCount}</p>
+              <p className="font-bold text-lg">{primaryResume ? aiMatchInsights.bestFitCount : 'N/A'}</p>
             </div>
             <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/30">
               <div className="flex items-center gap-3">
                 <TrendingUp className="h-5 w-5 text-blue-500" />
                 <p>Stretch Roles Explored</p>
               </div>
-              <p className="font-bold text-lg">{aiMatchInsights.stretchRoleCount}</p>
+              <p className="font-bold text-lg">{primaryResume ? aiMatchInsights.stretchRoleCount : 'N/A'}</p>
             </div>
              <Button variant="link" asChild className="p-0 h-auto">
               <Link href="/job-matcher">Explore more job matches <SearchCode className="ml-1 h-4 w-4" /></Link>
@@ -249,7 +270,7 @@ export default function DashboardPage() {
           <CardContent>
             {primaryResume && primaryResume.skills.length > 0 ? (
               <div className="flex flex-wrap gap-2">
-                {primaryResume.skills.slice(0, 10).map((skill, index) => ( // Show top 10 skills
+                {primaryResume.skills.slice(0, 10).map((skill, index) => (
                   <Badge key={index} variant="secondary" className="px-3 py-1 text-sm">{skill}</Badge>
                 ))}
                 {primaryResume.skills.length > 10 && <Badge variant="outline">+{primaryResume.skills.length - 10} more</Badge>}
@@ -257,9 +278,9 @@ export default function DashboardPage() {
             ) : (
               <div className="text-center py-6 text-muted-foreground">
                 <AlertTriangle className="mx-auto h-8 w-8 mb-2" />
-                <p>No primary resume found or no skills extracted.</p>
+                <p>{primaryResume ? "No skills extracted from primary resume." : "No primary resume set."}</p>
                 <Button variant="link" asChild className="mt-2">
-                  <Link href="/resume-scanner">Scan a resume to see skills here</Link>
+                  <Link href="/settings">Set or Scan a Primary Resume</Link>
                 </Button>
               </div>
             )}
@@ -272,14 +293,14 @@ export default function DashboardPage() {
               <Award className="h-6 w-6 text-primary" />
               Recommended Jobs
             </CardTitle>
-            <CardDescription>AI-powered job suggestions based on your primary resume.</CardDescription>
+            <CardDescription>AI suggestions based on your primary resume.</CardDescription>
           </CardHeader>
           <CardContent>
             {primaryResume ? (
               <>
                 <ul className="space-y-3">
                   {mockRecommendedJobs.slice(0,3).map((job, index) => (
-                    <li key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50">
+                    <li key={job.id + index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50">
                       <div>
                         <p className="font-medium">{job.title}</p>
                         <p className="text-sm text-muted-foreground">{job.company} - <span className="text-xs text-primary">{job.relevance} Match</span></p>
@@ -297,9 +318,9 @@ export default function DashboardPage() {
             ) : (
               <div className="text-center py-6 text-muted-foreground">
                 <AlertTriangle className="mx-auto h-8 w-8 mb-2" />
-                <p>Scan a resume to get personalized job recommendations.</p>
+                <p>Set a primary resume to get personalized job recommendations.</p>
                 <Button variant="link" asChild className="mt-2">
-                  <Link href="/resume-scanner">Scan Resume Now</Link>
+                  <Link href="/settings">Manage Resumes</Link>
                 </Button>
               </div>
             )}
@@ -327,7 +348,7 @@ export default function DashboardPage() {
             </Link>
           </Button>
           <Button variant="outline" size="lg" asChild className="flex flex-col h-auto p-6 items-center justify-center text-center space-y-2">
-            <Link href="/settings/profile">
+            <Link href="/settings">
               <User className="h-8 w-8 mb-2 text-primary" />
               <span>Update Profile</span>
             </Link>
@@ -338,4 +359,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-    

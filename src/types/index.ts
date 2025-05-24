@@ -14,32 +14,22 @@ export interface ResumeEducation {
 export interface AnalyzedResume {
   skills: string[];
   experience: ResumeExperience[];
-  education: (ResumeEducation | string)[]; // Updated to match AI flow where education can be string array
-  atsScore: number; // Added ATS score
+  education: (ResumeEducation | string)[];
+  atsScore: number;
 }
 
-// Matches the output structure of jobMatcher AI flow
-export interface JobMatchResult {
-  jobRanking: string;
-  fitCategory: string;
-}
-
+// Represents a user's profile
 export interface UserProfile {
   id: string;
   fullName: string;
   email: string;
-  // Potentially add fields like avatarUrl, headline, etc.
+  headline?: string;
+  // Consider adding:
+  // primaryResumeId?: string;
+  // resumes?: StoredResume[];
 }
 
-export interface JobApplication {
-  id:string;
-  jobTitle: string;
-  company: string;
-  status: 'Applied' | 'Interviewing' | 'Offer' | 'Rejected' | 'Saved';
-  dateApplied: string; // or Date object
-  resumeIdUsed?: string; // ID of the resume used for this application
-}
-
+// Represents a resume stored in the user's profile
 export interface StoredResume extends AnalyzedResume {
   id: string;
   fileName: string;
@@ -47,3 +37,12 @@ export interface StoredResume extends AnalyzedResume {
   isPrimary?: boolean;
 }
 
+// Represents a job application tracked by the user
+export interface JobApplication {
+  id:string;
+  jobTitle: string;
+  company: string;
+  status: 'Applied' | 'Interviewing' | 'Offer' | 'Rejected' | 'Saved';
+  dateApplied: string; // or Date object
+  resumeIdUsed?: string; // ID of the StoredResume used for this application
+}
