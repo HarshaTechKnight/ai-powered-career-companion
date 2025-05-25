@@ -5,61 +5,83 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ResumeUploadForm } from '@/components/resume-scanner/ResumeUploadForm';
 import { ResumeAnalysisDisplay } from '@/components/resume-scanner/ResumeAnalysisDisplay';
-import type { AnalyzedResume } from '@/types';
+import type { AnalyzedResume, InterviewPrepItem } from '@/types';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, FilePlus2 } from 'lucide-react';
+import { ArrowRight, FilePlus2, Loader2, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { generateInterviewPrep, type InterviewPrepInput } from '@/ai/flows/interview-prep-flow';
+import { InterviewPrepDisplay } from '@/components/interview/InterviewPrepDisplay';
+import { toast } from '@/hooks/use-toast';
 
-// This function should not be default exported
 function ResumeScannerPageContent() {
   const searchParams = useSearchParams();
   const [analysisResult, setAnalysisResult] = useState<AnalyzedResume | null>(null);
   const [analyzedFileName, setAnalyzedFileName] = useState<string>("");
-  const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false); // For initial load if resumeId is present
+  const [isLoadingAnalysis, setIsLoadingAnalysis] = useState(false);
 
-  // Mock function to fetch resume data if an ID is provided
-  // In a real app, this would be an API call.
+  const [interviewPrepData, setInterviewPrepData] = useState<InterviewPrepItem[] | null>(null);
+  const [isFetchingInterviewPrep, setIsFetchingInterviewPrep] = useState(false);
+
   useEffect(() => {
     const resumeId = searchParams.get('resumeId');
-    const fileName = searchParams.get('fileName'); // Get filename if passed
+    const fileName = searchParams.get('fileName'); 
     if (resumeId) {
       setIsLoadingAnalysis(true);
-      // Simulate fetching data
       setTimeout(() => {
-        // This is where you'd fetch the StoredResume by ID and cast/map to AnalyzedResume
-        // For now, let's mock a basic structure or a message.
-        // This example doesn't have the full StoredResume[] available client-side without more complex state management.
-        // So, we'll just acknowledge the ID for now.
-        // If you had a client-side store of resumes, you could load it here.
         console.log("Attempting to load analysis for resume ID:", resumeId);
-        // For a real scenario, you'd fetch and then:
-        // setAnalysisResult(fetchedResumeData); 
-        // setAnalyzedFileName(fetchedResumeData.fileName);
         if (fileName) {
             setAnalyzedFileName(decodeURIComponent(fileName));
         }
-        // For this mock, we assume if resumeId is present, it's for re-analysis or viewing
-        // We won't pre-fill the analysis result from here to keep it simple.
-        // The user would re-upload or the form would be pre-filled if we had that data.
         setIsLoadingAnalysis(false);
       }, 500);
     }
   }, [searchParams]);
 
+  const fetchInterviewPrep = async (skills: string[], jobContext?: string) => {
+    if (!skills || skills.length === 0) {
+      setInterviewPrepData([]); // No skills, no prep
+      return;
+    }
+    setIsFetchingInterviewPrep(true);
+    setInterviewPrepData(null); // Clear previous data
+    try {
+      const input: InterviewPrepInput = { skills, jobContext };
+      const result = await generateInterviewPrep(input);
+      if (result && result.preparations) {
+        setInterviewPrepData(result.preparations);
+        toast({
+          title: "Interview Prep Ready!",
+          description: "AI has generated some practice questions for you.",
+        });
+      } else {
+        throw new Error("AI interview prep returned no result or invalid format.");
+      }
+    } catch (error: any) {
+      console.error("Interview prep error:", error);
+      toast({
+        title: "Interview Prep Failed",
+        description: error.message || "Could not generate interview questions.",
+        variant: "destructive",
+        action: <AlertTriangle className="text-red-500" />,
+      });
+      setInterviewPrepData([]); // Set to empty array on error to stop loading
+    } finally {
+      setIsFetchingInterviewPrep(false);
+    }
+  };
 
   const handleAnalysisComplete = (analysis: AnalyzedResume, fileName: string) => {
     setAnalysisResult(analysis);
     setAnalyzedFileName(fileName);
+    // Automatically fetch interview prep questions based on new analysis
+    fetchInterviewPrep(analysis.skills); 
   };
   
   const handleAddToProfile = () => {
-    // Mock action: In a real app, this would save the analysisResult and fileName
-    // to the user's profile (e.g., via an API call to your backend).
     if (analysisResult && analyzedFileName) {
       alert(`Mock Action: "${analyzedFileName}" and its analysis would be saved to your profile.`);
-      // Here you might update a global state, or refetch profile data.
     } else {
       alert("No resume analyzed yet to add to profile.");
     }
@@ -69,9 +91,9 @@ function ResumeScannerPageContent() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Resume Scanner</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Resume Scanner & Interview Prep</h1>
           <p className="text-muted-foreground">
-            Upload your resume to get an AI-powered analysis of your skills, experience, and education.
+            Upload your resume for AI analysis and get personalized interview practice questions.
           </p>
           {searchParams.get('resumeId') && analyzedFileName && (
              <p className="text-sm text-primary mt-1">Viewing/Re-analyzing: {analyzedFileName}</p>
@@ -85,7 +107,7 @@ function ResumeScannerPageContent() {
             <Button asChild>
               <Link href={{
                 pathname: "/job-matcher",
-                query: { resumeData: JSON.stringify(analysisResult) } 
+                query: { resumeData: JSON.stringify(analysisResult), fileName: encodeURIComponent(analyzedFileName) } 
               }}>
                 Find Matching Jobs <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
@@ -103,16 +125,37 @@ function ResumeScannerPageContent() {
         <ResumeUploadForm onAnalysisComplete={handleAnalysisComplete} initialFileName={analyzedFileName || undefined} />
       )}
 
-
       {analysisResult && (
         <ResumeAnalysisDisplay analysis={analysisResult} fileName={analyzedFileName} />
+      )}
+
+      {isFetchingInterviewPrep && (
+        <Card className="mt-10 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              Generating Interview Prep...
+            </CardTitle>
+            <CardDescription>Our AI is crafting personalized questions and answers for you.</CardDescription>
+          </CardHeader>
+          <CardContent className="text-center py-8">
+            <div className="space-y-3">
+              <Skeleton className="h-8 w-3/4 mx-auto" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-8 w-3/4 mx-auto" />
+              <Skeleton className="h-12 w-full" />
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {analysisResult && !isFetchingInterviewPrep && interviewPrepData && (
+        <InterviewPrepDisplay prepItems={interviewPrepData} />
       )}
     </div>
   );
 }
 
-
-// This function should not be default exported
 function ResumeScannerPageSkeleton() {
   return (
     <div className="space-y-8">

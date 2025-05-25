@@ -65,3 +65,14 @@ export interface RecommendedJob {
 export interface JobRecommenderOutput {
   recommendations: RecommendedJob[];
 }
+
+// For the Interview Preparation Flow
+export interface InterviewPrepItem {
+  question: string;
+  sampleAnswer: string;
+  category?: string; // e.g., Behavioral, Technical, Skill-specific
+}
+
+export interface InterviewPrepOutput {
+  preparations: InterviewPrepItem[];
+}
