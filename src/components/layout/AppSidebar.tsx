@@ -8,6 +8,7 @@ import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
+import React, { useState, useEffect } from "react"; // Added useState, useEffect
 import {
   TooltipProvider, 
   Tooltip,
@@ -32,7 +33,6 @@ const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/resume-scanner", label: "Resume Scanner", icon: ScanText },
   { href: "/job-matcher", label: "Job Matcher", icon: SearchCode },
-  // { href: "/interview-coach", label: "Interview Coach", icon: MessageSquareHeart }, // Removed Interview Coach
 ];
 
 
@@ -41,6 +41,11 @@ export function AppSidebar() {
   const router = useRouter();
   const { setTheme, theme } = useTheme();
   const { state: sidebarState } = useSidebar(); 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isIconMode = sidebarState === "collapsed";
 
@@ -95,7 +100,7 @@ export function AppSidebar() {
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               tooltip={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >
-              {theme === "dark" ? <Sun /> : <Moon />}
+              {mounted ? (theme === "dark" ? <Sun /> : <Moon />) : <Sun />} {/* Render placeholder before mount */}
               <span>Toggle Theme</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
