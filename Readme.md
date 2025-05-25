@@ -1,6 +1,6 @@
 # KarmaMatch - Career Companion
 
-KarmaMatch a career Companion is a full-stack AI-powered application designed to assist job seekers throughout their journey. It provides valuable tools for resume analysis, job matching, and interview coaching, leveraging the power of Next.js, Firebase, and GenKit.
+KarmaMatch - Career Companion is a full-stack AI-powered application designed to assist job seekers throughout their journey. It provides valuable tools for resume analysis, job matching, and interview coaching, leveraging the power of Next.js, Firebase, and GenKit.
 
 ## Features
 
@@ -27,7 +27,7 @@ KarmaMatch a career Companion is a full-stack AI-powered application designed to
 
 ### Installation
 
-1.  Clone the repository:
+1. Clone the repository:
 ```
 bash
     git clone <repository_url>
