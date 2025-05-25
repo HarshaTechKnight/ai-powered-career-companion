@@ -2,9 +2,9 @@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { MainHeader } from '@/components/layout/MainHeader';
-import { Briefcase, Lightbulb, Zap, Users, CheckCircle, DollarSign, Quote, Star, Mail, Phone, Linkedin, Twitter, Instagram, Facebook, ArrowRight, ScanText, SearchCode, TrendingUp } from 'lucide-react';
+import { Briefcase, Lightbulb, Zap, CheckCircle, Quote, Star, ArrowRight, ScanText, SearchCode, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Image from 'next/image';
 import { siteConfig } from '@/config/site';
 import { Input } from '@/components/ui/input';
@@ -79,7 +79,7 @@ export default function HomePage() {
       quote: "KarmaMatch transformed my job search! The AI insights were spot on and helped me land my dream job in weeks.",
       name: "Priya V.",
       role: "Software Engineer",
-      avatarText: "PV" // Used for AvatarFallback if image is removed
+      avatarText: "PV"
     },
     {
       quote: "The resume scanner is incredibly accurate. I finally understand how to present my skills effectively.",
@@ -95,14 +95,15 @@ export default function HomePage() {
     }
   ];
 
-  // Dynamically get social icons from lucide-react
+  // Dynamically get social icons from lucide-react (example)
   const SocialIcon = ({ name }: { name: string }) => {
-    const IconComponent = {
-      Facebook,
-      Twitter,
-      Instagram,
-      Linkedin,
-    }[name] || Briefcase; // Fallback icon
+    const icons: { [key: string]: React.ElementType } = {
+      Facebook: siteConfig.socialLinks.find(s => s.iconName === "Facebook")?.icon || Briefcase,
+      Twitter: siteConfig.socialLinks.find(s => s.iconName === "Twitter")?.icon || Briefcase,
+      Instagram: siteConfig.socialLinks.find(s => s.iconName === "Instagram")?.icon || Briefcase,
+      Linkedin: siteConfig.socialLinks.find(s => s.iconName === "Linkedin")?.icon || Briefcase,
+    };
+    const IconComponent = icons[name] || Briefcase;
     return <IconComponent className="h-5 w-5" />;
   };
 
@@ -114,15 +115,15 @@ export default function HomePage() {
         {/* Hero Section */}
         <section id="home" className="w-full py-20 md:py-32 lg:py-40 bg-gradient-to-br from-primary/10 via-background to-accent/10">
           <div className="container px-4 md:px-6">
-            <div className="grid gap-8 lg:grid-cols-2 lg:gap-16 items-center">
-              <div className="flex flex-col justify-center space-y-6">
+            <div className="flex flex-col items-center text-center space-y-8">
+              <div className="flex flex-col items-center justify-center space-y-6 max-w-3xl">
                 <h1 className="text-4xl font-bold tracking-tight sm:text-5xl xl:text-6xl/none bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
                   Find Your Destined Career Path with KarmaMatch
                 </h1>
                 <p className="max-w-[600px] text-foreground/80 md:text-xl">
                   Leverage AI to scan your resume, match with the perfect jobs, and confidently navigate your professional journey.
                 </p>
-                <div className="flex flex-col gap-3 min-[400px]:flex-row">
+                <div className="flex flex-col gap-3 sm:flex-row">
                   <Button asChild size="lg" className="shadow-lg hover:shadow-primary/50 transition-shadow">
                     <Link href="/signup">Get Started Now</Link>
                   </Button>
@@ -131,15 +132,7 @@ export default function HomePage() {
                   </Button>
                 </div>
               </div>
-              <Image
-                src="https://storage.googleapis.com/aai-web-samples/app-prototyper/career-crossroads.png"
-                alt="KarmaMatch AI assisting with career path"
-                width={600}
-                height={500}
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover shadow-2xl"
-                data-ai-hint="career choices"
-                priority
-              />
+              {/* Image removed from here */}
             </div>
           </div>
         </section>
@@ -191,7 +184,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Features Section - (Kept similar to original, but can be enhanced) */}
+        {/* Features Section */}
         <section id="features" className="w-full py-16 md:py-24 lg:py-32 bg-muted/50">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
@@ -286,7 +279,6 @@ export default function HomePage() {
                     <p className="text-muted-foreground italic mb-6">&ldquo;{testimonial.quote}&rdquo;</p>
                     <div className="flex items-center">
                       <Avatar className="h-12 w-12 mr-4">
-                        {/* <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint="portrait professional" /> */}
                         <AvatarFallback>{testimonial.avatarText || testimonial.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                       </Avatar>
                       <div>
