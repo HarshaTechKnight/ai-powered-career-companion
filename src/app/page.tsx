@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { MainHeader } from '@/components/layout/MainHeader';
-import { Briefcase, Lightbulb, Zap, Users, CheckCircle, DollarSign, Quote, Star, Mail, Phone, Linkedin, Twitter, Instagram, Facebook, ArrowRight } from 'lucide-react';
+import { Briefcase, Lightbulb, Zap, Users, CheckCircle, DollarSign, Quote, Star, Mail, Phone, Linkedin, Twitter, Instagram, Facebook, ArrowRight, ScanText, SearchCode, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from 'next/image';
@@ -132,12 +132,12 @@ export default function HomePage() {
                 </div>
               </div>
               <Image
-                src="https://placehold.co/600x500.png"
+                src="https://storage.googleapis.com/aai-web-samples/app-prototyper/career-crossroads.png"
                 alt="KarmaMatch AI assisting with career path"
                 width={600}
                 height={500}
                 className="mx-auto aspect-video overflow-hidden rounded-xl object-cover shadow-2xl"
-                data-ai-hint="career guidance future"
+                data-ai-hint="career choices"
                 priority
               />
             </div>
@@ -253,10 +253,10 @@ export default function HomePage() {
                   </CardHeader>
                   <CardContent className="flex-1 space-y-3">
                     <ul className="space-y-2 text-sm text-muted-foreground">
-                      {plan.features.map((feature, fIndex) => (
+                      {plan.features.map((featureText, fIndex) => (
                         <li key={fIndex} className="flex items-center">
                           <CheckCircle className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
-                          {feature}
+                          {featureText}
                         </li>
                       ))}
                     </ul>
@@ -395,9 +395,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-// Helper icons for services section (if not already imported from lucide-react)
-// Need to ensure these are actually available or use alternatives
-const ScanText = Briefcase; // Placeholder, replace with actual if available or specific icon
-const SearchCode = Zap; // Placeholder
-const TrendingUp = Lightbulb; // Placeholder
