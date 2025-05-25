@@ -79,19 +79,19 @@ export default function HomePage() {
       quote: "KarmaMatch transformed my job search! The AI insights were spot on and helped me land my dream job in weeks.",
       name: "Priya V.",
       role: "Software Engineer",
-      avatar: "https://placehold.co/100x100.png?text=PV"
+      avatarText: "PV" // Used for AvatarFallback if image is removed
     },
     {
       quote: "The resume scanner is incredibly accurate. I finally understand how to present my skills effectively.",
       name: "Raj K.",
       role: "Marketing Manager",
-      avatar: "https://placehold.co/100x100.png?text=RK"
+      avatarText: "RK"
     },
     {
       quote: "I was stuck in my career. KarmaMatch showed me 'stretch roles' I hadn't considered and gave me the confidence to apply.",
       name: "Aisha B.",
       role: "UX Designer",
-      avatar: "https://placehold.co/100x100.png?text=AB"
+      avatarText: "AB"
     }
   ];
 
@@ -147,15 +147,7 @@ export default function HomePage() {
         {/* About Us Section */}
         <section id="about" className="w-full py-16 md:py-24 lg:py-32 bg-muted/50">
           <div className="container px-4 md:px-6">
-            <div className="grid gap-8 lg:grid-cols-2 lg:gap-16 items-center">
-              <Image
-                src="https://placehold.co/550x450.png"
-                alt="KarmaMatch Team Collaboration"
-                width={550}
-                height={450}
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover shadow-xl"
-                data-ai-hint="diverse team working"
-              />
+            <div className="max-w-3xl mx-auto text-center">
               <div className="space-y-4">
                 <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm font-medium text-secondary-foreground">About KarmaMatch</div>
                 <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Guiding Your Career Journey, Intelligently</h2>
@@ -294,8 +286,8 @@ export default function HomePage() {
                     <p className="text-muted-foreground italic mb-6">&ldquo;{testimonial.quote}&rdquo;</p>
                     <div className="flex items-center">
                       <Avatar className="h-12 w-12 mr-4">
-                        <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint="portrait professional" />
-                        <AvatarFallback>{testimonial.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                        {/* <AvatarImage src={testimonial.avatar} alt={testimonial.name} data-ai-hint="portrait professional" /> */}
+                        <AvatarFallback>{testimonial.avatarText || testimonial.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                       </Avatar>
                       <div>
                         <p className="font-semibold">{testimonial.name}</p>
